@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useauth.jsx";
 import {
-  subscribeToIncidents,
+  fetchIncidents,
   createIncident,
-} from "../services/incidentsApi"; // 🔥 Firestore backend
+} from "../services/incidentsApi"; // ✅ Node backend
 
-// ⛔ incidents localStorage removed – we now use Firestore for incidents
 const NOTIF_KEY = "notifications_v1";
 
+// Notifications still local (per device)
 function loadNotifications() {
   try {
     const raw = localStorage.getItem(NOTIF_KEY);
@@ -75,16 +75,27 @@ function DashboardReporter() {
     error: "",
   });
 
-  // 🔄 Subscribe to Firestore incidents (shared backend)
+  // 🔄 Load incidents from Node backend
   useEffect(() => {
-    const unsub = subscribeToIncidents((all) => {
-      // keep ALL incidents so:
-      // - duplicate check works across campus
-      // - prediction uses campus history
-      setIncidents(all);
-    });
-    return () => unsub();
+    async function load() {
+      try {
+        const all = await fetchIncidents();
+        setIncidents(all || []);
+      } catch (err) {
+        console.error("Failed to fetch incidents", err);
+      }
+    }
+    load();
   }, []);
+
+  const reloadIncidents = async () => {
+    try {
+      const all = await fetchIncidents();
+      setIncidents(all || []);
+    } catch (err) {
+      console.error("Failed to reload incidents", err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -172,13 +183,9 @@ function DashboardReporter() {
         : autoPriority(form.category, form.description);
 
     const nowIso = new Date().toISOString();
-
-    // combined location string for display
     const locationDisplay = `${form.hostel} - Room ${form.room}`;
 
     const newIncident = {
-      // Firestore will create its own document ID; this is just stored as a field
-      id: Date.now(),
       title: form.title,
       category: form.category,
       description: form.description,
@@ -195,10 +202,10 @@ function DashboardReporter() {
     };
 
     try {
-      // ✅ Save to Firestore instead of localStorage
       await createIncident(newIncident);
+      await reloadIncidents();
 
-      // 🔔 Notifications still stored locally (per browser)
+      // local notifications only
       pushNotification({
         id: Date.now() + 1,
         targetRole: "reporter",
@@ -234,7 +241,6 @@ function DashboardReporter() {
         title: "",
         description: "",
         imageUrl: "",
-        // keep category, hostel, room, manualPriority so prediction still works
       }));
     } catch (err) {
       console.error("Failed to create incident", err);
@@ -823,9 +829,7 @@ function DashboardReporter() {
             boxShadow: "0 12px 30px rgba(15,23,42,0.08)",
           }}
         >
-          <h3
-            style={{ fontSize: "1.05rem", fontWeight: 600, marginBottom: 10 }}
-          >
+          <h3 style={{ fontSize: "1.05rem", fontWeight: 600, marginBottom: 10 }}>
             Recent incidents by you
           </h3>
           {recent.length === 0 && (
@@ -934,7 +938,7 @@ function DashboardReporter() {
                           dateStyle: "short",
                           timeStyle: "short",
                         })
-                      : "—"}
+                      : "-"}
                   </span>
                 </div>
               </div>

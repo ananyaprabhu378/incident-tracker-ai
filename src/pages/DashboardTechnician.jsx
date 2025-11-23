@@ -1,9 +1,10 @@
+// src/pages/DashboardTechnician.jsx
 import { useEffect, useMemo, useState } from "react";
 import useAuth from "../hooks/useauth.jsx";
 import {
-  subscribeToIncidents,
+  fetchIncidents,
   updateIncident,
-} from "../services/incidentsApi"; // Firestore backend
+} from "../services/incidentsApi"; // ✅ Node backend
 
 // small helpers
 function formatAge(createdAt) {
@@ -36,10 +37,19 @@ function DashboardTechnician() {
 
   const technicianId = user?.email || "tech";
 
-  // 🔄 Subscribe to Firestore incidents
+  // 🔄 Load incidents from Node backend (instead of Firestore subscribe)
+  const loadIncidents = async () => {
+    try {
+      const data = await fetchIncidents();
+      setIncidents(data || []);
+    } catch (err) {
+      console.error("Failed to fetch incidents", err);
+      setError("Could not load incidents from server.");
+    }
+  };
+
   useEffect(() => {
-    const unsub = subscribeToIncidents((all) => setIncidents(all || []));
-    return () => unsub();
+    loadIncidents();
   }, []);
 
   const metrics = useMemo(() => {
@@ -74,7 +84,7 @@ function DashboardTechnician() {
     });
   }, [incidents, filterPriority]);
 
-  // ---------- ACTION HANDLERS USING FIRESTORE ----------
+  // ---------- ACTION HANDLERS USING NODE BACKEND ----------
 
   const handleAssignToMe = async (incident) => {
     if (metrics.assignedCount >= 1) {
@@ -84,43 +94,67 @@ function DashboardTechnician() {
       return;
     }
 
-    setSelectedIncident(incident);
-    await updateIncident(incident._docId, {
-      assignedTo: technicianId,
-      assignedName: user?.name || "Technician",
-      assignedAt: new Date().toISOString(),
-    });
-    setInfo("Incident assigned to you.");
+    try {
+      setSelectedIncident(incident);
+      await updateIncident(incident.id, {
+        assignedTo: technicianId,
+        assignedName: user?.name || "Technician",
+        assignedAt: new Date().toISOString(),
+      });
+      setInfo("Incident assigned to you.");
+      await loadIncidents(); // refresh from backend
+    } catch (err) {
+      console.error(err);
+      setError("Failed to assign incident.");
+    }
   };
 
   const handleStartWork = async (incident) => {
-    setSelectedIncident(incident);
-    await updateIncident(incident._docId, {
-      status: "In Progress",
-      startedAt: new Date().toISOString(),
-    });
-    setInfo("Work started.");
+    try {
+      setSelectedIncident(incident);
+      await updateIncident(incident.id, {
+        status: "In Progress",
+        startedAt: new Date().toISOString(),
+      });
+      setInfo("Work started.");
+      await loadIncidents();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to start work.");
+    }
   };
 
   const handleResolve = async (incident) => {
-    setSelectedIncident(incident);
-    await updateIncident(incident._docId, {
-      status: "Resolved",
-      resolvedAt: new Date().toISOString(),
-    });
-    setInfo("Incident marked resolved.");
+    try {
+      setSelectedIncident(incident);
+      await updateIncident(incident.id, {
+        status: "Resolved",
+        resolvedAt: new Date().toISOString(),
+      });
+      setInfo("Incident marked resolved.");
+      await loadIncidents();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to resolve incident.");
+    }
   };
 
   const handleRelease = async (incident) => {
-    setSelectedIncident(incident);
-    await updateIncident(incident._docId, {
-      assignedTo: null,
-      assignedName: null,
-      assignedAt: null,
-      startedAt: null,
-      status: "New",
-    });
-    setInfo("Incident released.");
+    try {
+      setSelectedIncident(incident);
+      await updateIncident(incident.id, {
+        assignedTo: null,
+        assignedName: null,
+        assignedAt: null,
+        startedAt: null,
+        status: "New",
+      });
+      setInfo("Incident released.");
+      await loadIncidents();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to release incident.");
+    }
   };
 
   const renderLocationDisplay = (i) => {
@@ -275,7 +309,7 @@ function DashboardTechnician() {
 
               return (
                 <div
-                  key={i._docId}
+                  key={i.id} /* ✅ use backend id instead of _docId */
                   style={{
                     padding: "10px 12px",
                     borderRadius: 12,
@@ -284,12 +318,14 @@ function DashboardTechnician() {
                   }}
                 >
                   <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: 4,
-                    }}
-                  >
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  }}
+>
+
+                  
                     <div
                       style={{
                         fontSize: "0.95rem",
@@ -373,7 +409,9 @@ function DashboardTechnician() {
                       marginBottom: 8,
                     }}
                   >
-                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <div
+                      style={{ display: "flex", gap: 6, alignItems: "center" }}
+                    >
                       <span
                         style={{
                           fontSize: "0.75rem",

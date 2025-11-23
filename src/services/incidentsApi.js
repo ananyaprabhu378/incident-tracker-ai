@@ -1,44 +1,37 @@
 // src/services/incidentsApi.js
-import {
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../firebase";
 
-const INCIDENTS_COLLECTION = "incidents";
+// change this to your deployed backend URL after you host it
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
 
-// 🔄 Real-time subscription to all incidents (shared across devices)
-export function subscribeToIncidents(callback) {
-  const q = query(
-    collection(db, INCIDENTS_COLLECTION),
-    orderBy("createdAt", "desc")
-  );
+export async function fetchIncidents() {
+  const res = await fetch(`${API_BASE}/incidents`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch incidents");
+  }
+  return res.json();
+}
 
-  return onSnapshot(q, (snapshot) => {
-    const list = snapshot.docs.map((d) => ({
-      _docId: d.id, // Firestore document id (for updates)
-      ...d.data(),
-    }));
-    callback(list);
+export async function createIncident(incident) {
+  const res = await fetch(`${API_BASE}/incidents`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(incident),
   });
+  if (!res.ok) {
+    throw new Error("Failed to create incident");
+  }
+  return res.json();
 }
 
-// ➕ Create new incident document
-export async function createIncident(data) {
-  const payload = {
-    ...data,
-    createdAt: data.createdAt || new Date().toISOString(),
-  };
-  await addDoc(collection(db, INCIDENTS_COLLECTION), payload);
-}
-
-// ✏️ Update existing incident by Firestore document id
-export async function updateIncident(docId, partial) {
-  const ref = doc(db, INCIDENTS_COLLECTION, docId);
-  await updateDoc(ref, partial);
+export async function updateIncident(id, partial) {
+  const res = await fetch(`${API_BASE}/incidents/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(partial),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to update incident");
+  }
+  return res.json();
 }

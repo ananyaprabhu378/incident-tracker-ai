@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { subscribeToIncidents } from "../services/incidentsApi"; // 🔥 Firestore
+import { fetchIncidents } from "../services/incidentsApi"; // ✅ Node backend
 
 // logistic
 function sigmoid(x) {
@@ -9,12 +9,16 @@ function sigmoid(x) {
 function DashboardAdmin() {
   const [incidents, setIncidents] = useState([]);
 
-  // 🔄 Subscribe to Firestore incidents
   useEffect(() => {
-    const unsub = subscribeToIncidents((all) => {
-      setIncidents(all || []);
-    });
-    return () => unsub();
+    async function load() {
+      try {
+        const all = await fetchIncidents();
+        setIncidents(all || []);
+      } catch (err) {
+        console.error("Failed to fetch incidents", err);
+      }
+    }
+    load();
   }, []);
 
   const stats = useMemo(() => {
@@ -26,16 +30,13 @@ function DashboardAdmin() {
     const now = Date.now();
     const THIRTY_MIN = 30 * 60 * 1000;
 
-    // SLA breaches: open > 30 min
     const slaBreached = incidents.filter((i) => {
       if (!i.createdAt || i.status === "Resolved") return false;
       const ts = new Date(i.createdAt).getTime();
       return now - ts > THIRTY_MIN;
     }).length;
 
-    // Heatmap by hostel
     const byLocation = {};
-    // Risk by (hostel, category)
     const byLocCat = {};
 
     incidents.forEach((i) => {
@@ -43,14 +44,12 @@ function DashboardAdmin() {
       const cat = i.category || "Other";
       const ts = i.createdAt ? new Date(i.createdAt).getTime() : null;
 
-      // hostel summary
       if (!byLocation[hostel]) {
         byLocation[hostel] = { total: 0, high: 0 };
       }
       byLocation[hostel].total += 1;
       if (i.priority === "High") byLocation[hostel].high += 1;
 
-      // (hostel, category) bucket
       const key = `${hostel.toLowerCase()}__${cat}`;
       if (!byLocCat[key]) {
         byLocCat[key] = {
@@ -99,7 +98,6 @@ function DashboardAdmin() {
       0
     );
 
-    // build risk pairs using features
     const riskPairs = Object.values(byLocCat).map((bucket) => {
       const { hostel, category, total, high, recent24h, last7d, openCount } =
         bucket;
@@ -153,7 +151,6 @@ function DashboardAdmin() {
 
     riskPairs.sort((a, b) => b.probability - a.probability);
 
-    // 7-day trend (all incidents)
     const last7Days = [];
     for (let d = 6; d >= 0; d--) {
       const dayStart = new Date(now - d * 24 * 60 * 60 * 1000);
@@ -172,7 +169,6 @@ function DashboardAdmin() {
       0
     );
 
-    // campus health score
     const riskIndex =
       total === 0
         ? 0
@@ -416,7 +412,7 @@ function DashboardAdmin() {
         </div>
       </div>
 
-      {/* AI risk predictions for ALL (hostel, category) pairs */}
+      {/* AI risk predictions */}
       <div
         style={{
           padding: "16px 18px",
@@ -582,8 +578,9 @@ function DashboardAdmin() {
                   }}
                 >
                   Interpretation: frequently recurring, high-priority and
-                  long-lived <strong>{r.category.toLowerCase()}</strong> issues
-                  in <strong>{r.hostel}</strong> push this probability upward.
+                  long-lived{" "}
+                  <strong>{r.category.toLowerCase()}</strong> issues in{" "}
+                  <strong>{r.hostel}</strong> push this probability upward.
                   Admins can proactively schedule checks or preventive
                   maintenance for the highest-risk pairs.
                 </p>
