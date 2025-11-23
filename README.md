@@ -179,5 +179,112 @@ BMSIT — AIML
 ✅ ALL Styles will show perfectly in GitHub  
 ❌ No white background color issues  
 ✔ Markdown tested
+incident-tracker-ai/
+│── frontend/
+│ ├── src/
+│ │ ├── pages/
+│ │ ├── context/
+│ │ └── services/
+│ └── package.json
+│
+└── backend/
+├── models/
+├── routes/
+├── controllers/
+├── server.js
+└── package.json
+
+
+---
+
+## 🛠 **Installation & Setup**
+
+### Clone repository
+```bash
+git clone https://github.com/ananyaprabhu378/incident-tracker-ai.git
+cd incident-tracker-ai
+
+Frontend Install
+cd frontend
+npm install
+npm run dev
+
+Backend Install
+cd backend
+npm install
+npm start
+
+🗄 Database Models
+Incident Schema
+{
+  title: String,
+  category: String,
+  description: String,
+  hostel: String,
+  room: String,
+  priority: String,
+  status: String,
+  reporterEmail: String,
+  assignedTo: String,
+  assignedName: String,
+  createdAt: Date,
+  resolvedAt: Date
+}
+
+User Schema
+{
+  name: String,
+  email: String,
+  password: String,
+  role: String
+}
+
+🌐 REST API Endpoints
+Method	Endpoint	Description
+POST	/api/incidents	Create new incident
+GET	/api/incidents	Fetch all incidents
+PUT	/api/incidents/:id	Update status / assignment
+POST	/api/auth/register	User registration
+POST	/api/auth/login	Login authentication
+🧪 Testing
+
+Postman used for backend API testing
+
+Multiple devices tested for real-time sync
+
+Verified MongoDB writes & updates
+
+🎯 ML & Analytics Highlights
+
+Frequency-based hotspot detection
+
+AI priority assignment
+
+Prevent repeated breakdowns using predictive alerts
+
+🎖 Hackathon Ready Statement
+
+This project solves a real-world campus problem with a:
+✔ Full stack architecture
+✔ AI-powered automation
+✔ Centralized backend with analytics
+✔ Scalable deployment
+
+👩‍💻 Team
+
+Ananya G P
+BMSIT — AIML
+
+
+---
+
+✅ ALL Styles will show perfectly in GitHub  
+❌ No white background color issues  
+✔ Markdown tested
+
+
+
+<img width="1536" height="1024" alt="12d63fa0-7a47-422b-8503-a28469ff6e9f" src="https://github.com/user-attachments/assets/e8bce9bd-355a-4233-bbca-649fcfb95e74" />
+
 
 
