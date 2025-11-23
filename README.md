@@ -169,6 +169,8 @@ This project solves a real-world campus problem with a:
 👩‍💻 Team
 
 Ananya G P
+buchupalli deepthi
+sneha mudgal
 BMSIT — AIML
 
 
