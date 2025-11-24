@@ -9,176 +9,199 @@ for all the files check this repo:https://github.com/ananyaprabhu378/Incident-Tr
 
 backend url:https://incident-tracker1.onrender.com
 
-# 🚀 Smart Campus Incident Tracker – AI & ML Enabled
+# 🚀 Smart Campus Incident Tracker — AI & ML Powered
 
-A full-stack platform to report, assign & resolve campus infrastructure issues in real-time.
+A real-time campus infrastructure maintenance system that **predicts failures**, prevents repeated breakdowns, and **optimizes technician workload** using AI.
 
----
-
-## 🌟 **Project Overview**
-Smart Campus Incident Tracker enables students, technicians, and administrators to efficiently handle problems such as power outages, water leakage, broken equipment, internet failure, etc.
-
-### It provides
-- Real-time collaboration
-- AI-based smart priority prediction
-- Transparent workflow & SLA monitoring
-- Hotspot & frequency analytics
-- Technician assignment & status workflow
-- GPS-based incident tracking
+🌍 Live Demo  
+Frontend: https://ananyaprabhu378.github.io/Incident-Tracker1  
+Backend API: https://incident-tracker1.onrender.com/api/incidents  
 
 ---
 
-## ✨ **Key Features**
+## ⭐ Why This Project?
+Campus maintenance often suffers from:
+- Repeated failures in the same hostel/rooms 🚨
+- Delayed technician response ⏳
+- No clarity on assignment or status ❓
+- Safety-critical issues unnoticed ⚡💧
 
-| Feature | Description |
-|--------|------------|
-| Incident Reporting | Submit issue with title, hostel, room, description & image |
-| Smart Priority Prediction (AI/ML) | Auto-priority based on keywords & frequency |
-| Technician Workflow | Assign, start work, resolve, release |
-| Notifications | Local alerts for reporter, admin & technician |
-| Heatmap Analytics | Hostel & category-based hotspot predictions |
-| Role-based Login | Reporter / Technician / Admin |
-| GPS Location Tagging | Exact latitude & longitude capture |
-| Multi-Device Support | Same data visible across all devices |
-
----
-
-## 🧠 **Tech Stack**
-
-### **Frontend**
-- React.js (Vite)
-- Tailwind CSS
-- LocalStorage Notifications
-
-### **Backend**
-- Node.js + Express.js
-- File-based JSON storage (`incidents.json`)
-- REST API hosted on Render
-
-### **Deployment**
-| Service | Link |
-|--------|-------|
-| Backend (Render) | https://incident-tracker1.onrender.com |
-| Frontend (GitHub Pages) | https://ananyaprabhu378.github.io/Incident-Tracker1 |
+📌 This platform solves that by:
+✔ Preventing recurring issues  
+✔ Predicting failures before they occur  
+✔ Monitoring entire campus efficiently  
+✔ Optimizing technician workload  
+✔ Ensuring SLA compliance (⚠ 30 mins rule)
 
 ---
 
-## 🏛 **System Architecture**
+## 🌟 Key Features (Mapped to Evaluation Criteria)
+
+| Category | Feature | Status |
+|---------|---------|-------|
+| **Incident Logic & Prediction (30%)** | Smart AI-based priority prediction | ✅ |
+| | Frequency-based ML hotspot analytics | ✅ |
+| | SLA aging warnings | ✅ |
+| **Dashboard & Heatmap (25%)** | Admin + Technician Dashboards | ✅ |
+| | Risk-based hotspot insights | ⚙ In Dashboard |
+| **Technician Scheduling (20%)** | Auto-assignment restrictions (no overlap) | ✅ |
+| | Status transitions: New → In Progress → Resolved | ✅ |
+| **Code Quality & Architecture (15%)** | REST API with Render deployment | ✅ |
+| | Modular services & hooks structure | ✅ |
+| **UI/UX & Presentation (10%)** | Modern responsive UI + Accessible | ✅ |
+
+---
+
+## 🧠 Our ML Model (Explained Simply — Judge Friendly)
+
+### 🔹 Smart Priority Prediction  
+Based on **incident keywords** + **severity**:
+
+| Keyword Example | Auto Priority |
+|----------------|---------------|
+| "Fire", "Leak", "Shock", "Burst" | 🔴 High |
+| "Not working", "Broken" | 🟡 Medium |
+| Minor issues | 🟢 Low |
+
+> Score fed to sigmoid activation to mimic probability scaling.
+
+---
+
+### 🔹 Predictive Hotspots (Frequency + Recency Model)
+
+We group incidents by:  
+**(Hostel + Category)** → assign risk score based on:
+
+| Factor | Weight |
+|--------|--------|
+| Total incidents | 0.35 |
+| High priority count | 0.8 |
+| New issues in last 24h | 1.1 |
+| Currently open issues | 0.9 |
+| Aging of oldest open issue | 1.1 |
+
+📌 Output → **Probability of next failure**  
+📌 Helps admin pre-alert technicians
+
+---
+
+## 🔄 Workflow Flow
+
+```
+Reporter creates incident (GPS optional)
+            ↓
+ML predicts priority + updates heatmap risk
+            ↓
+Technician/admin assigns & updates progress
+            ↓
+Dashboards update with SLA & hotspot signals
+```
+
+📌 Ensures **no technician is overloaded** (one active assignment)
+
+---
+
+## 🏛 System Architecture
 
 ```
 React Frontend (GitHub Pages)
-          ↓
-Node + Express REST API  (Render)
-          ↓
+        ⇅ REST
+Node + Express Backend (Render)
+        ⇅
 JSON Persistent Storage (incidents.json)
-          ↓
-ML priority + hotspot frequency analytics
+        ⇅
+AI Analytics Engine
 ```
+
+🔗 Full-stack — central DB ensures **multi-device visibility**
 
 ---
 
-## 🔄 **Workflow**
-```
-Reporter logs issue  → Issue stored in backend
-                     ↓
-Admin/Technician views & assigns
-                     ↓
-Technician updates progress & resolves
-                     ↓
-Dashboard updates with risk heatmap + SLA alerts
-```
-
----
-
-## 📁 **Project Structure**
+## 📁 Project Structure
 
 ```
 Incident-Tracker1/
-│── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── services/
-│   └── package.json
+│── frontend/ (React + Vite)
+│   └── src/pages, components, services
 │
-└── backend/
+└── backend/ (Node + Express)
     ├── data/incidents.json
-    ├── server.js
-    └── package.json
+    └── server.js (REST API)
 ```
 
 ---
 
-## 🛠 **Installation & Setup**
+## 🧪 Testing (Demonstrated live)
 
-### Clone Repository
-```bash
-git clone https://github.com/ananyaprabhu378/Incident-Tracker1.git
-cd Incident-Tracker1
-```
+✔ Multi-role login  
+✔ Technician SLA (30 min risk warnings)  
+✔ GPS tracking and location mapping  
+✔ AI Probability > 3 incidents → hotspot warning  
+✔ Local & cloud testing via Postman  
 
-### Frontend Setup
+---
+
+## 📌 Installation (Local Setup)
+
+### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### Backend Setup
+### Backend
 ```bash
 cd backend
 npm install
 npm start
 ```
 
----
-
-## 🌐 **REST API Endpoints**
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/incidents` | Get all incidents |
-| POST | `/api/incidents` | Create new incident |
-| PATCH | `/api/incidents/:id` | Update incident |
-| DELETE | `/api/incidents/:id` | Delete incident |
+API Root → `http://localhost:5000/api/incidents`
 
 ---
 
-## 🧠 **AI & Analytics**
-- Auto-priority prediction
-- Frequency-based risk score (hostel/category)
-- Hotspot predictions for repeated failures
-- GPS enabled incident mapping
-- SLA failure indicators
+## 🌐 Deployments
+
+| Service | Platform | Status |
+|--------|----------|------|
+| Backend | Render | ✔ Stable |
+| Frontend | GitHub Pages | ✔ Live |
 
 ---
 
-## 🧪 **Testing**
-- Tested using Postman
-- Verified multi-device access
-- Deployed & tested live on Render + GitHub Pages
+## 📌 Final Hackathon Deliverables
+
+| Deliverable | Status |
+|------------|--------|
+| Working Application/API | ✔ Completed |
+| AI Prediction Logic Documentation | ✔ Included |
+| Technician Scheduling Flow | ✔ Implemented |
+| 3–5 min Video Demo | 🎥 (Will be shown during presentation) |
+| GitHub Repository | ✔ Linked |
 
 ---
 
-## 🎖 **Hackathon Statement**
-> This project solves a real campus maintenance problem with AI-enhanced automation, real-time workflow management, and predictive risk analytics to reduce repeated failures and improve campus safety.
+## 🛡 SLA & Safety Rules
+- SLA alert when issue age > **30 mins**
+- High-priority alerts → technician notifications
 
 ---
 
-## 👨‍💻 **Team**
-- **Ananya G P**
-- **Buchupalli Deepthi**
-- **Sneha Mudgal**
-- AIML – BMSIT
+## 👨‍💻 Team Members
+
+| Ananya G P
+| Buchupalli Deepthi 
+| Sneha Mudgal 
+| AIML – BMSIT |
 
 ---
 
-## ⭐ **Support**
-If you like this project, please ⭐ the repository!
+## ⭐ Support Us
+If this project impressed you 🔥 —  
+please **⭐ star the repo** and encourage innovation 🌟
 
 ---
 
-## 🙌 **Thank You**
-Transforming campus maintenance with technology 💡
-You
-Transforming campus maintenance through technology
+## 🙌 Thank You!
+Making campuses safer, smarter & failure-proof with AI 💡
