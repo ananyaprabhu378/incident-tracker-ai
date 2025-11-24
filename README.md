@@ -11,197 +11,208 @@ backend url:https://incident-tracker1.onrender.com
 
 # 🚀 Smart Campus Incident Tracker — AI & ML Powered
 
-A real-time campus infrastructure maintenance system that **predicts failures**, prevents repeated breakdowns, and **optimizes technician workload** using AI.
+A real-time campus infrastructure maintenance system that **predicts failures**, prevents repeated breakdowns, and **optimizes technician workload** using AI & analytics.
 
-🌍 Live Demo  
-Frontend: https://ananyaprabhu378.github.io/Incident-Tracker1  
-Backend API: https://incident-tracker1.onrender.com/api/incidents  
-
----
-
-## ⭐ Why This Project?
-Campus maintenance often suffers from:
-- Repeated failures in the same hostel/rooms 🚨
-- Delayed technician response ⏳
-- No clarity on assignment or status ❓
-- Safety-critical issues unnoticed ⚡💧
-
-📌 This platform solves that by:
-✔ Preventing recurring issues  
-✔ Predicting failures before they occur  
-✔ Monitoring entire campus efficiently  
-✔ Optimizing technician workload  
-✔ Ensuring SLA compliance (⚠ 30 mins rule)
+🌍 Live Deployment  
+🔹 Frontend: https://ananyaprabhu378.github.io/Incident-Tracker1  
+🔹 Backend API: https://incident-tracker1.onrender.com/api/incidents  
 
 ---
 
-## 🌟 Key Features (Mapped to Evaluation Criteria)
+## 🌟 Project Overview
+Traditional complaint handling is slow, unclear, and repetitive. This project transforms campus maintenance through an automated system that supports:
+
+- Fast incident reporting
+- Smart technician assignment
+- SLA alert monitoring
+- Future failure prediction
+- Hotspot frequency analysis
+
+📌 **Goal:** Prevent failures before they occur & improve response accuracy.
+
+---
+
+## 🧾 Key Features (Mapped to Evaluation Criteria)
 
 | Category | Feature | Status |
-|---------|---------|-------|
-| **Incident Logic & Prediction (30%)** | Smart AI-based priority prediction | ✅ |
-| | Frequency-based ML hotspot analytics | ✅ |
-| | SLA aging warnings | ✅ |
-| **Dashboard & Heatmap (25%)** | Admin + Technician Dashboards | ✅ |
-| | Risk-based hotspot insights | ⚙ In Dashboard |
-| **Technician Scheduling (20%)** | Auto-assignment restrictions (no overlap) | ✅ |
-| | Status transitions: New → In Progress → Resolved | ✅ |
-| **Code Quality & Architecture (15%)** | REST API with Render deployment | ✅ |
-| | Modular services & hooks structure | ✅ |
-| **UI/UX & Presentation (10%)** | Modern responsive UI + Accessible | ✅ |
+|---------|---------|--------|
+| Incident Logic & Prediction (30%) | ML priority + hotspot forecasting | ✅ |
+| Dashboard & Heatmap (25%) | Real-time dashboards & risk visualization | ✅ |
+| Technician Scheduling (20%) | No task overlap + SLA awareness | ✅ |
+| Code Quality & Architecture (15%) | REST architecture + modular structure | ✅ |
+| UI/UX & Presentation (10%) | Modern clean UI + responsive | ✅ |
 
 ---
 
-## 🧠 Our ML Model (Explained Simply — Judge Friendly)
+## 🧠 Machine Learning & Prediction Logic
 
-### 🔹 Smart Priority Prediction  
-Based on **incident keywords** + **severity**:
+### **1. Priority Prediction**
+We analyze **keywords** + **risk intent** inside issue description:
 
-| Keyword Example | Auto Priority |
-|----------------|---------------|
-| "Fire", "Leak", "Shock", "Burst" | 🔴 High |
-| "Not working", "Broken" | 🟡 Medium |
-| Minor issues | 🟢 Low |
+| Keyword | Example | Assigned Priority |
+|---------|---------|-------------------|
+| Critical / danger | fire, burst, shock, leak | 🔴 High |
+| Functional issue | not working, outage | 🟡 Medium |
+| Small / cosmetic | loose, minor | 🟢 Low |
 
-> Score fed to sigmoid activation to mimic probability scaling.
-
----
-
-### 🔹 Predictive Hotspots (Frequency + Recency Model)
-
-We group incidents by:  
-**(Hostel + Category)** → assign risk score based on:
-
-| Factor | Weight |
-|--------|--------|
-| Total incidents | 0.35 |
-| High priority count | 0.8 |
-| New issues in last 24h | 1.1 |
-| Currently open issues | 0.9 |
-| Aging of oldest open issue | 1.1 |
-
-📌 Output → **Probability of next failure**  
-📌 Helps admin pre-alert technicians
-
----
-
-## 🔄 Workflow Flow
-
-```
-Reporter creates incident (GPS optional)
-            ↓
-ML predicts priority + updates heatmap risk
-            ↓
-Technician/admin assigns & updates progress
-            ↓
-Dashboards update with SLA & hotspot signals
+```js
+if(text.includes("fire") || text.includes("shock") || text.includes("leak")) priority = "High";
+else if(text.includes("minor") || text.includes("slow")) priority = "Low";
+else priority = "Medium";
 ```
 
-📌 Ensures **no technician is overloaded** (one active assignment)
+### **2. Hotspot Frequency Prediction**
+Grouped per **Hostel + Category**, risk score is calculated:
+
+```
+Risk Score = (0.35 × totalIncidents)
+           + (0.8 × highPriority)
+           + (1.1 × incidentsLast24h)
+           + (0.9 × currentlyOpen)
+           + (1.1 × agingOfOldestOpen)
+```
+
+Converted to probability using sigmoid:
+
+```js
+prob = 1 / (1 + Math.exp(-rawScore / 3.5));
+```
+
+📌 Output used to trigger **Preventive alerts** before failures.
 
 ---
 
-## 🏛 System Architecture
+## 🔄 Complaint Flow
 
 ```
-React Frontend (GitHub Pages)
-        ⇅ REST
-Node + Express Backend (Render)
-        ⇅
-JSON Persistent Storage (incidents.json)
-        ⇅
-AI Analytics Engine
+Reporter raises issue → Saved to backend (incidents.json)
+         ↓
+ML assigns priority + hotspot scoring
+         ↓
+Admin/Technician dashboard updates live
+         ↓
+Technician: Assign → Start → Resolve → Release
+         ↓
+SLA timer & warnings update until completion
 ```
-
-🔗 Full-stack — central DB ensures **multi-device visibility**
 
 ---
 
-## 📁 Project Structure
+## 🧑‍🔧 Technician Scheduling Logic
+
+| Rule | Benefit |
+|------|---------|
+| A technician can only take 1 open assignment | Prevents overload |
+| SLA warning above 30 min | Urgent prioritization |
+| Release button | Task transfer when needed |
+
+---
+
+## 🧱 DB Schema (JSON Based)
+
+### `incidents.json`
+```json
+[
+  {
+    "id": "1732487881000",
+    "title": "Water leakage in bathroom",
+    "category": "Water",
+    "description": "Severe leak",
+    "hostel": "Hostel A",
+    "room": "201",
+    "priority": "High",
+    "status": "New",
+    "reporterEmail": "abc@gmail.com",
+    "assignedTo": null,
+    "assignedName": null,
+    "latitude": 12.9345,
+    "longitude": 77.5342,
+    "createdAt": "2025-01-10T08:20:00Z"
+  }
+]
+```
+
+---
+
+## 🏛 Full Project Structure
 
 ```
 Incident-Tracker1/
-│── frontend/ (React + Vite)
-│   └── src/pages, components, services
+│
+├── frontend/ (React + Vite)
+│   ├── src/
+│   │   ├── pages/            # Reporter, Technician, Admin dashboards
+│   │   ├── components/       # Cards, status badges, modals, tables
+│   │   ├── context/          # Auth & global state
+│   │   ├── services/
+│   │   │   └── incidentsApi.js  # API calls to backend
+│   │   └── hooks/
+│   ├── public/
+│   └── package.json
 │
 └── backend/ (Node + Express)
-    ├── data/incidents.json
-    └── server.js (REST API)
+    ├── data/
+    │   └── incidents.json     # Persistent storage
+    ├── routes/
+    │   └── incidents.js       # CRUD endpoints
+    ├── controllers/
+    │   └── incidentController.js
+    ├── server.js
+    └── package.json
 ```
 
 ---
 
-## 🧪 Testing (Demonstrated live)
+## 🌐 REST API Endpoints
 
-✔ Multi-role login  
-✔ Technician SLA (30 min risk warnings)  
-✔ GPS tracking and location mapping  
-✔ AI Probability > 3 incidents → hotspot warning  
-✔ Local & cloud testing via Postman  
-
----
-
-## 📌 Installation (Local Setup)
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Backend
-```bash
-cd backend
-npm install
-npm start
-```
-
-API Root → `http://localhost:5000/api/incidents`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/incidents` | Fetch all incidents |
+| POST | `/api/incidents` | Create incident |
+| PATCH | `/api/incidents/:id` | Update incident |
+| DELETE | `/api/incidents/:id` | Delete incident |
 
 ---
 
-## 🌐 Deployments
+## 🧪 Testing
 
-| Service | Platform | Status |
-|--------|----------|------|
-| Backend | Render | ✔ Stable |
-| Frontend | GitHub Pages | ✔ Live |
+### Test Coverage & Validation
+✔ API tested with Postman  
+✔ Multi-device testing (mobile + laptop + guests)  
+✔ Technician and reporter workflow tested  
+✔ Render Cloud storage persistence verified  
+✔ SLA timing accuracy confirmed  
 
 ---
 
-## 📌 Final Hackathon Deliverables
+## 🎬 Final Deliverables (for Hackathon requirements)
 
 | Deliverable | Status |
 |------------|--------|
-| Working Application/API | ✔ Completed |
-| AI Prediction Logic Documentation | ✔ Included |
-| Technician Scheduling Flow | ✔ Implemented |
-| 3–5 min Video Demo | 🎥 (Will be shown during presentation) |
-| GitHub Repository | ✔ Linked |
+| Working Application/API | ✔ Done |
+| Prediction Logic Documentation | ✔ Included |
+| Complaint & Technician Flow | ✔ Included |
+| 3–5 Min Video Demo | 🎥 Ready |
+| GitHub Repository | ✔ Submitted |
 
 ---
 
-## 🛡 SLA & Safety Rules
-- SLA alert when issue age > **30 mins**
-- High-priority alerts → technician notifications
+## 👥 Team
+
+
+|--------|------|
+| **Ananya G P**
+| **Buchupalli Deepthi**
+| **Sneha Mudgal** 
 
 ---
 
-## 👨‍💻 Team Members
-
-| Ananya G P
-| Buchupalli Deepthi 
-| Sneha Mudgal 
-| AIML – BMSIT |
+## ⭐ Support
+If you like the project, please ⭐ star the repository and support innovation.
 
 ---
 
-## ⭐ Support Us
-If this project impressed you 🔥 —  
-please **⭐ star the repo** and encourage innovation 🌟
-
----
-
+## 🙏 Thank You
+Building a safer & smarter campus with AI 💡
 ## 🙌 Thank You!
 Making campuses safer, smarter & failure-proof with AI 💡
