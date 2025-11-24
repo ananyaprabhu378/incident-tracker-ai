@@ -2,7 +2,7 @@ DEMO VIDEO (MUST WATCH):
 https://drive.google.com/file/d/18y1Rdzr3Q6qSDp05nuxujXrf-QTc-ulI/view?usp=sharing
 
 LIVE LINK:
-https://ananyaprabhu378.github.io/incident-tracker-ai/ (if taking input in reporter glitching then render might be misbehaving please refer demo video for that particular block)
+https://ananyaprabhu378.github.io/incident-tracker-ai/ 
 # 🚀 Smart Campus Incident Tracker – AI & ML Enabled
 ### A unified platform to report, assign & resolve campus infrastructure incidents in real time
 
