@@ -5,9 +5,9 @@ https://drive.google.com/file/d/18y1Rdzr3Q6qSDp05nuxujXrf-QTc-ulI/view?usp=shari
 https://ananyaprabhu378.github.io/incident-tracker-ai/ 
 
 
-for all the files please check this repo as the present repo does not have all the file : https://github.com/ananyaprabhu378/Incident-Tracker1.git
+for all the files please check this repo as the present repo does not have all the files : https://github.com/ananyaprabhu378/Incident-Tracker1.git
 
-backend url:https://incident-tracker1.onrender.com
+
 
 # 🚀 Smart Campus Incident Tracker — AI & ML Powered
 
